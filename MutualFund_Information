@@ -1,0 +1,253 @@
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.Test;
+
+import dataconnection.ExcelConnection;
+
+public class MutualFund_Scenario {
+	/*Excel connection setup  */
+	String filepath = "C:/Users/XXXX/Desktop/scenario.xls";
+	ExcelConnection objexcel = new ExcelConnection(filepath);	
+	String Databasesheet = "Sheet2";
+	int rownumber = 1;
+	
+	WebDriver driver;
+	
+	@Test(priority=1)
+	public void Setup()
+	{
+		String Browser = objexcel.GetData(Databasesheet,rownumber, "Browser");
+		String webdriver_name , Path; 
+		switch(Browser)
+		{
+		case "IE":
+			webdriver_name = "";
+			Path = "";
+			System.setProperty(webdriver_name, Path);
+			break;
+		case "Firefox":
+			webdriver_name = "webdriver.gecko.driver";
+			Path = "B:\\TestNG_MoneyControl\\driver\\firefoxdriver\\geckodriver.exe";
+			System.setProperty(webdriver_name, Path);
+			driver = new FirefoxDriver();
+			break;
+		case "Chrome":
+			webdriver_name = "webdriver.chrome.driver";
+			Path = "B:\\TestNG_MoneyControl\\driver\\chromedriver\\chromedriver.exe";
+			System.setProperty(webdriver_name, Path);
+			driver = new ChromeDriver();
+			break;
+		default:
+			System.out.println("No browser is selected");
+		}	
+	}
+	
+	@Test(dependsOnMethods = {"Setup"},priority=2)
+	public void Navigation()
+	{
+		driver.manage().deleteAllCookies();
+		driver.manage().window().maximize();
+		driver.navigate().to("http://www.moneycontrol.com/");		
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		String parentWindowHandler = driver.getWindowHandle();		
+		String subWindowHandler = null;
+		Set<String> handles = driver.getWindowHandles(); // get all window handles
+		Iterator<String> iterator = handles.iterator();
+		while (iterator.hasNext()){
+		    subWindowHandler = iterator.next();
+		    System.out.println(subWindowHandler.toString());		    
+		}
+		
+		driver.switchTo().window(subWindowHandler); // switch to popup window
+		try
+		{
+			By popup = By.xpath("//img[@src='http://img-d02.moneycontrol.co.in/images/mcradar/mc_logo.jpg']");
+			
+			if (driver.findElement(popup).isDisplayed())
+			{
+				driver.close();
+			}
+			System.out.println("Pop up windows closed");			
+		}catch(NoSuchElementException e)
+		{
+		
+			System.out.println("Pop up Window not found");
+		}
+		
+		driver.switchTo().window(parentWindowHandler);  // switch back to parent window
+	}
+	
+	public void Mutualfund_navigation(int rownumber)
+	{
+		try
+		{
+			driver.findElement(By.id("menu4")).click();
+			driver.manage().timeouts().pageLoadTimeout(20, TimeUnit.SECONDS);
+			driver.findElement(By.xpath("//input[@id='search_str1']")).clear();
+			String MutualFund = objexcel.GetData(Databasesheet,rownumber, "MutualFund");			
+			driver.findElement(By.xpath("//input[@id='search_str1']")).sendKeys(MutualFund);
+			driver.findElement(By.xpath("//div[@class='FL PL3 PT3']/input[@onclick='redirect_scheme();']")).click();
+			driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+//			System.out.println(driver.findElement(By.xpath("//p[@class='b_20 PT10 FL']")).getText());
+			
+			List<WebElement> linkElements = driver.findElements(By.xpath("//table[@class='srch_tbl']/tbody/tr"));
+			int counter = linkElements.size();
+			System.out.println(counter);
+			int selection =0;
+			do
+			{
+				String Text = linkElements.get(selection).getText().trim();
+				if(Text.equals(MutualFund))
+				{
+					int tempcounter = selection+1;
+					driver.findElement(By.xpath("//table[@class='srch_tbl']/tbody/tr["+tempcounter+"]/td/p/a")).click();;
+					//linkElements.get(selection).click();
+					driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+					break;					
+				}
+				selection++;
+			}while(selection<counter);					
+			
+		}catch(Exception e)
+		{
+			System.out.println("Navigation : "+e);
+		}
+		
+		
+	}	
+	
+	public void Mutualfund_Information(int rownumber)
+	{
+		try
+		{
+		
+			String header = driver.findElement(By.xpath("//div[@class='header']/div/div[@class='FL']/h1")).getText();
+			objexcel.Setdata(filepath, Databasesheet, rownumber, "Mutual_Fund_Name", header);
+			System.out.println(header);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Mutual_Fund_Name"+e);
+		}
+
+		try
+		{
+			String Plan_Info = driver.findElement(By.xpath("//form[@id='planname_frm']/div[@class='FL']")).getText();			
+			objexcel.Setdata(filepath, Databasesheet, rownumber, "Plan_Info", Plan_Info);
+			System.out.println(Plan_Info);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Plan_Info"+e);
+		}
+
+		try
+		{
+			String Date = driver.findElement(By.xpath("//p[@class='top10bd PL2']")).getText();
+			objexcel.Setdata(filepath, Databasesheet, rownumber, "Date", Date);
+			System.out.println(Date);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Date"+e);
+		}
+
+		try
+		{
+			String Current_NAV = driver.findElement(By.className("bd30tp")).getText();
+			objexcel.Setdata(filepath, Databasesheet,rownumber, "Current_NAV", Current_NAV);
+			System.out.println(Current_NAV);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Current_NAV"+e);
+		}
+
+		try
+		{
+			String CRISIL_MF_RANK = driver.findElement(By.xpath("//p[@class='MT2']/a")).getText();
+			if(CRISIL_MF_RANK.equals("Not Ranked"))
+			{
+			objexcel.Setdata(filepath, Databasesheet, rownumber, "CRISIL_MF_RANK", CRISIL_MF_RANK);
+			System.out.println(CRISIL_MF_RANK);
+			}else
+			{
+				List<WebElement> rating = driver.findElements(By.xpath("//p[@class='MT2']/a/span"));
+				int rating_counter = rating.size();
+				String rate = ""+rating_counter;
+				objexcel.Setdata(filepath, Databasesheet, rownumber, "CRISIL_MF_RANK",rate);
+				System.out.println(rating.size());
+			}
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("CRISIL_MF_RANK"+e);
+		}
+
+		try
+		{
+			String Riskometer = driver.findElement(By.xpath("//span[@class='FL UC']/Strong")).getText();
+			objexcel.Setdata(filepath, Databasesheet, rownumber, "Riskometer", Riskometer);
+			System.out.println(Riskometer);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Riskometer"+e);
+		}
+
+		try
+		{
+			String FUND_FAMILY = driver.findElement(By.xpath("//div[@class='MT12 txtstrip']/a")).getText();
+			objexcel.Setdata(filepath, Databasesheet,rownumber, "FUND_FAMILY", FUND_FAMILY);
+			System.out.println(FUND_FAMILY);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("FUND_FAMILY"+e);
+		}
+
+		try
+		{
+			String FUND_CLASS = driver.findElement(By.xpath("//span[@class='PL10']/a")).getText();
+			objexcel.Setdata(filepath, Databasesheet,rownumber, "FUND_CLASS", FUND_CLASS);
+			System.out.println(FUND_CLASS);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Mutual_Fund_Name"+e);
+		}
+		
+		try
+		{
+			WebDriverWait wait = new WebDriverWait(driver,30);
+			wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[@class='home']")));
+			driver.findElement(By.xpath("//span[@class='home']")).click();
+			driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+			
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Back to Main Page : "+e);
+		}
+		
+	}
+	
+	@Test(priority =3)
+	public void multiple_execution()
+	{
+		int Start_row_number = 1;
+		int End_row_number = 20;		
+
+		for(int i=Start_row_number-1;i<End_row_number;i++)
+		{
+			Mutualfund_navigation(i+1);
+			Mutualfund_Information(i+1);	
+		}
+		
+		driver.close();
+	}
+	
+}
