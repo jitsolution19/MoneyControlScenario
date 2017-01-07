@@ -1,0 +1,255 @@
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.Test;
+
+import dataconnection.ExcelConnection;
+
+public class Moneycontrol {
+	/*Excel connection setup  */
+	String filepath = "C:/Users/XXXXXX/Desktop/scenario.xls";
+	ExcelConnection objexcel = new ExcelConnection(filepath);	
+	String Databasesheet = "Sheet1";
+	int rownumber = 1;
+	WebDriver driver;
+	@Test(priority=1)
+	public void Setup()
+	{
+		String Browser = objexcel.GetData(Databasesheet,rownumber, "Browser");
+		String webdriver_name , Path; 
+		switch(Browser)
+		{
+		case "IE":
+			webdriver_name = "";
+			Path = "";
+			System.setProperty(webdriver_name, Path);
+			break;
+		case "Firefox":
+			webdriver_name = "webdriver.gecko.driver";
+			Path = "B:\\TestNG_MoneyControl\\driver\\firefoxdriver\\geckodriver.exe";
+			System.setProperty(webdriver_name, Path);
+			driver = new FirefoxDriver();
+			break;
+		case "Chrome":
+			webdriver_name = "webdriver.chrome.driver";
+			Path = "B:\\TestNG_MoneyControl\\driver\\chromedriver\\chromedriver.exe";
+			System.setProperty(webdriver_name, Path);
+			driver = new ChromeDriver();
+			break;
+		default:
+			System.out.println("No browser is selected");
+		}	
+	}
+
+	@Test(dependsOnMethods = {"Setup"},priority=2)
+	public void navigation()
+	{
+		driver.manage().deleteAllCookies();
+		driver.manage().window().maximize();
+		driver.navigate().to("http://www.moneycontrol.com/");		
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		String parentWindowHandler = driver.getWindowHandle();		
+		String subWindowHandler = null;
+		Set<String> handles = driver.getWindowHandles(); // get all window handles
+		Iterator<String> iterator = handles.iterator();
+		while (iterator.hasNext()){
+		    subWindowHandler = iterator.next();
+		    System.out.println(subWindowHandler.toString());		    
+		}
+		
+		driver.switchTo().window(subWindowHandler); // switch to popup window
+		try
+		{
+			By popup = By.xpath("//img[@src='http://img-d02.moneycontrol.co.in/images/mcradar/mc_logo.jpg']");
+			
+			if (driver.findElement(popup).isDisplayed())
+			{
+				driver.close();
+			}
+			System.out.println("Pop up windows closed");			
+		}catch(NoSuchElementException e)
+		{
+		
+			System.out.println("Pop up Window not found");
+		}
+		
+		driver.switchTo().window(parentWindowHandler);  // switch back to parent window
+	}
+	
+	public void stockNavigation(int Sheetrownumber )
+	{
+		String StockName = objexcel.GetData(Databasesheet,Sheetrownumber, "StockName");
+		driver.findElement(By.id("menu11")).isEnabled();
+		driver.findElement(By.id("companyname")).clear();
+		driver.findElement(By.id("companyname")).sendKeys(StockName);
+		driver.findElement(By.className("goBtnIn")).click();
+			
+	}
+	
+	public void stockinformation(int Sheetrownumber)
+	{
+		try
+		{
+		
+			String StockName = driver.findElement(By.className("b_42")).getText();
+			System.out.println("Stock Name : "+StockName);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "StockName_UI", StockName);			
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("StockName "+e);
+		}
+		
+		try
+		{		
+			String BSE_Number = driver.findElement(By.xpath("//div[@class='FL gry10']")).getText();
+			System.out.println("BSE Number : "+BSE_Number);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "BSE_Number", BSE_Number);
+			
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE_Number "+e);
+		}
+		
+		try
+		{		
+		String bse_upd_time = driver.findElement(By.id("bse_upd_time")).getText();
+			System.out.println("DATE As Of Now : "+bse_upd_time);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "As_of_Date", bse_upd_time);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Date As of Now : "+e);
+		}
+
+		try
+		{
+			String BSE_Price = driver.findElement(By.id("Bse_Prc_tick")).getText();
+			System.out.println("BSE PRICE : "+BSE_Price);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "BSE_Price", BSE_Price);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE PRICE : "+e);
+		}
+		
+		try
+		{
+			String BSE_Price_change = driver.findElement(By.xpath("//div[@id='b_changetext']/span")).getText();
+	//		String ChangePercent = driver.findElement(By.xpath("//div[@id='b_changetext']/text()[2]")).getText();
+			System.out.println("BSE Change PRICE : "+BSE_Price_change);
+		//	System.out.println("BSE Change Percentage : "+ChangePercent);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "BSE_Price_change", BSE_Price_change);
+			//objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "BSE_%_change", ChangePercent);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE_Price_change : "+e);
+		}
+		
+		try
+		{
+			String bse_volume = driver.findElement(By.id("bse_volume")).getText();
+			System.out.println("BSE Volume : "+bse_volume);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "BSE_volume", bse_volume);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE Volume : "+e);
+		}
+		
+		try
+		{
+			String b_prevclose = driver.findElement(By.id("b_prevclose")).getText();
+			System.out.println("BSE Previous Closing Price : "+b_prevclose);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "Previous_Close", b_prevclose);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE Previous Closing Price : "+e);
+		}
+		
+		try
+		{
+			String b_open = driver.findElement(By.id("b_open")).getText();
+			System.out.println("BSE Open PRICE : "+b_open);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "Open_Price", b_open);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE Open PRICE : "+e);
+		}
+		
+		try
+		{
+			String b_52low = driver.findElement(By.id("b_52low")).getText();
+			System.out.println("BSE 52 Week Low PRICE : "+b_52low);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "52_Week_Low", b_52low);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE 52 Week Low PRICE : "+e);
+		}
+		
+		try
+		{
+			String b_52high = driver.findElement(By.id("b_52high")).getText();
+			System.out.println("BSE 52 Week High PRICE : "+b_52high);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "52_Week_High", b_52high);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("BSE 52 Week High PRICE : "+e);
+		}
+		
+		try
+		{
+			String P_E = driver.findElement(By.xpath("//div[@id='mktdet_2']/div[@class='FL']/div[@class='PA7 brdb'][2]/div[@class='FR gD_12']")).getText();
+			System.out.println("P_E : "+P_E);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "P_E", P_E);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("P_E : "+e);
+		}
+		
+		
+		try
+		{
+			String EPS = driver.findElement(By.xpath("//div[@id='mktdet_2']/div[@class='FL'][2]/div[@class='PA7 brdb'][1]/div[@class='FR gD_12']")).getText();
+			System.out.println("EPS : "+EPS);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "EPS", EPS);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("EPS : "+e);
+		}
+		
+		try
+		{
+			String FACEVALUE = driver.findElement(By.xpath("//div[@id='mktdet_2']/div[@class='FL'][2]/div[@class='PA7 brdb'][5]/div[@class='FR gD_12']")).getText();
+			System.out.println("FACEVALUE : "+FACEVALUE);
+			objexcel.Setdata(filepath, Databasesheet,Sheetrownumber, "FACEVALUE", FACEVALUE);
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("FACEVALUE : "+e);
+		}
+
+		try
+		{
+			driver.findElement(By.xpath("//span[@class='home']")).click();
+			driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+			
+		}catch(NoSuchElementException e)
+		{
+			System.out.println("Back to Main Page : "+e);
+		}
+	}
+
+	@Test(priority =3)
+	public void multiple_execution()
+	{
+		int Start_row_number = 1;
+		int End_row_number = 34;
+		for(int i=Start_row_number-1;i<End_row_number;i++)
+		{
+			stockNavigation(i+1);
+			stockinformation(i+1);	
+		}
+		driver.close();
+	}
+}
