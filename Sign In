@@ -1,0 +1,178 @@
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
+import dataconnection.ExcelConnection;
+import junit.framework.Assert;
+
+public class Sign_In {
+
+	/*Excel connection setup  */
+	String filepath = "C:/Users/XXXX/Desktop/scenario.xls";
+	ExcelConnection objexcel = new ExcelConnection(filepath);	
+	String Databasesheet = "SignIn";
+	int rownumber = 1;
+	
+	/* ********* Report Setup ************** **/
+	ExtentReports report;
+	ExtentTest logger;
+	String Report_Location = "B:\\TestNG_MoneyControl\\Reports\\Execution_Report.html";
+	
+	/* ********* Webdriver_Setup ************** **/
+	
+	WebDriver driver;
+	
+	@Test(priority=1)
+	public void Setup()
+	{
+		report=new ExtentReports(Report_Location,true);
+		logger=report.startTest("Validate Browser Setup ","Verify Browser Selection for Execution");
+		
+		String Browser = objexcel.GetData(Databasesheet,rownumber, "Browser");
+		logger.log(LogStatus.INFO, "Browser Selected : "+Browser);
+		String webdriver_name , Path; 
+		switch(Browser)
+		{
+		case "IE":
+			webdriver_name = "";
+			Path = "";
+			System.setProperty(webdriver_name, Path);
+			break;
+		case "Firefox":
+			webdriver_name = "webdriver.gecko.driver";
+			Path = "B:\\TestNG_MoneyControl\\driver\\firefoxdriver\\geckodriver.exe";
+			System.setProperty(webdriver_name, Path);
+			driver = new FirefoxDriver();
+			break;
+		case "Chrome":
+			webdriver_name = "webdriver.chrome.driver";
+			Path = "B:\\TestNG_MoneyControl\\driver\\chromedriver\\chromedriver.exe";
+			System.setProperty(webdriver_name, Path);
+			driver = new ChromeDriver();
+			logger.log(LogStatus.PASS, "Chrome Browser Selected Successfully");
+			break;
+		default:
+			logger.log(LogStatus.FAIL, "No browser is selected");
+		}
+		
+		report.endTest(logger);
+	}
+	
+	@Test(dependsOnMethods = {"Setup"},priority=2)
+	public void Navigation()
+	{
+		logger=report.startTest("Validate Navigation","Validate Navigation to Sign In tab");
+		driver.manage().deleteAllCookies();
+		driver.manage().window().maximize();
+		driver.navigate().to("http://www.moneycontrol.com/");
+		logger.log(LogStatus.INFO, "Url : http://www.moneycontrol.com/");
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		String parentWindowHandler = driver.getWindowHandle();		
+		String subWindowHandler = null;
+		Set<String> handles = driver.getWindowHandles(); // get all window handles
+		int numberofPopup_Window = handles.size();
+		if(numberofPopup_Window>1)
+		{
+			Iterator<String> iterator = handles.iterator();
+			while (iterator.hasNext()){
+			    subWindowHandler = iterator.next();
+			    System.out.println(subWindowHandler.toString());		    
+			}
+			
+			driver.switchTo().window(subWindowHandler); // switch to popup window
+			try
+			{
+				By popup = By.xpath("//img[@src='http://img-d02.moneycontrol.co.in/images/mcradar/mc_logo.jpg']");
+				
+				if (driver.findElement(popup).isDisplayed())
+				{
+					driver.close();
+				}
+				logger.log(LogStatus.INFO, "Pop up windows closed");
+				logger.log(LogStatus.PASS, "Pop up windows closed Successfully");
+						
+			}catch(NoSuchElementException e)
+			{
+			
+				logger.log(LogStatus.INFO, "Pop up Window not found");
+				logger.log(LogStatus.FAIL, "Pop up windows not found");
+			}
+			
+			driver.switchTo().window(parentWindowHandler);  // switch back to parent window	
+		}
+		else
+		{
+			logger.log(LogStatus.INFO, "Pop up windows Does Not Exist");
+		}
+		report.endTest(logger);
+	}
+	
+	@Test(priority=3)
+	public void login()
+	{
+		logger=report.startTest("Validate Login Functionality ","Verify user is able to Login ");		
+		driver.findElement(By.id("signact")).click();
+		String UserName = objexcel.GetData(Databasesheet,rownumber, "UserName");
+		driver.findElement(By.id("signuname")).sendKeys(UserName);
+		logger.log(LogStatus.INFO, "User Name : "+UserName);
+		String Password = objexcel.GetData(Databasesheet,rownumber, "Password");
+		driver.findElement(By.id("signpwd")).sendKeys(Password);
+		logger.log(LogStatus.INFO, "Password : "+Password);
+		driver.findElement(By.className("btnsigns")).click();
+		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);		
+		logger.log(LogStatus.PASS, " Clicked on Login Successfully");
+		
+		try
+		{
+			By popup = By.linkText("Keep your account secure »");
+			String Popwindow_Tile = driver.findElement(popup).getText();
+			System.out.println("Popwindow_Tile : "+Popwindow_Tile);
+			logger.log(LogStatus.INFO, " Pop up Window Title : "+Popwindow_Tile);
+			if (driver.findElement(popup).getText().equals("Keep your account secure »"))
+			{
+				driver.findElement(By.xpath("//a[@class='btn_close btn_closepp']")).click();
+				driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+				String UsernameTitle = driver.findElement(By.xpath("//a[@id='usr_nm']")).getText();
+				Assert.assertTrue(UsernameTitle.contains("XXXXXXXX.."));
+				logger.log(LogStatus.PASS, "Keep your account secure Pop up window Closed Successfully");
+			}
+			else
+			{
+				logger.log(LogStatus.FAIL, " Unable to Close the Pop up window");
+			}
+			
+		}catch(NoSuchElementException e)
+		{
+			System.out.println(e);
+			logger.log(LogStatus.FAIL, " Unable to Close the Pop up window");
+		}
+		
+		report.endTest(logger);
+		}
+		
+	
+	@AfterMethod()
+	public void Teardown(ITestResult result)
+	{
+		if(result.getStatus()==ITestResult.FAILURE)
+		{
+			logger.log(LogStatus.FAIL, "Sign In Test Case Verified");		
+		}
+		report.endTest(logger);
+		report.flush();
+	
+	}
+}
