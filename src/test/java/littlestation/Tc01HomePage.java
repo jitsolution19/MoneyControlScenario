@@ -3,14 +3,17 @@ package littlestation;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class Tc01HomePage {
 	@Test
 	public void launchApplciation() {
-
-		WebDriver driver = new ChromeDriver();
+		ChromeOptions options = new ChromeOptions();
+		String userProfile = System.getProperty("java.io.tmpdir") + "/chrome-profile-" + System.currentTimeMillis();
+		options.addArguments("--user-data-dir=" + userProfile);
+		WebDriver driver = new ChromeDriver(options);
 		driver.manage().deleteAllCookies();
 		driver.manage().window().maximize();
 		driver.get("https://littlestation.in/");
