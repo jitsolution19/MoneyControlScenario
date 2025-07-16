@@ -11,6 +11,8 @@ public class Tc01HomePage {
 	public void launchApplciation() {
 
 		WebDriver driver = new ChromeDriver();
+		driver.manage().deleteAllCookies();
+		driver.manage().window().maximize();
 		driver.get("https://littlestation.in/");
 		String actualText = driver.findElement(By.xpath(".//p[@class='wp-block-site-tagline has-small-font-size']"))
 				.getText();
