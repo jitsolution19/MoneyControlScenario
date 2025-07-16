@@ -11,8 +11,12 @@ public class Tc01HomePage {
 	@Test
 	public void launchApplciation() {
 		ChromeOptions options = new ChromeOptions();
-		String userProfile = System.getProperty("java.io.tmpdir") + "/chrome-profile-" + System.currentTimeMillis();
-		options.addArguments("--user-data-dir=" + userProfile);
+//		String userProfile = System.getProperty("java.io.tmpdir") + "/chrome-profile-" + System.currentTimeMillis();
+//		options.addArguments("--user-data-dir=" + userProfile);
+		options.addArguments("--headless=new"); // For Chrome 109+
+		options.addArguments("--disable-gpu");
+		options.addArguments("--no-sandbox");
+		options.addArguments("--disable-dev-shm-usage");
 		WebDriver driver = new ChromeDriver(options);
 		driver.manage().deleteAllCookies();
 		driver.manage().window().maximize();

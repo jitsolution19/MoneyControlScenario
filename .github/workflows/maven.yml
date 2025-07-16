@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Run Selenium Tests
 
 on:
   push:
@@ -7,19 +7,21 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    - name: Set up Java
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
         distribution: 'temurin'
+        java-version: '17'
 
-    - name: Build with Maven
-      run: mvn clean install
+    - name: Set up Chrome
+      uses: browser-actions/setup-chrome@v1
+
+    - name: Build and Test with Maven
+      run: mvn clean test
