@@ -16,6 +16,8 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.TmsLink;
+import utilities.CaptureScreenshot;
+
 import java.io.ByteArrayInputStream;
 
 public class Tc01HomePage extends BaseTest{
@@ -43,10 +45,7 @@ public class Tc01HomePage extends BaseTest{
 		String actualText = driver.findElement(By.xpath(".//p[@class='wp-block-site-tagline has-small-font-size']"))
 				.getText();
 		System.out.println(actualText);
-		Assert.assertEquals("Little Treasures, Big Smiles!", actualText);
-		TakesScreenshot screenshot = (TakesScreenshot)driver;
-		String source = screenshot.getScreenshotAs(OutputType.BASE64);
-		byte[] decodedImg = Base64.getDecoder().decode(source);
-		Allure.addAttachment("Header Screenshot1", new ByteArrayInputStream(decodedImg));
+		Assert.assertEquals("Little Treasures, Big Smiles!", actualText);		
+		CaptureScreenshot.takescreenshot(driver, "font validation");
 	}
 }
