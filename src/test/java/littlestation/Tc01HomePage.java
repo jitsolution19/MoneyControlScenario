@@ -1,31 +1,52 @@
 package littlestation;
 
+import java.util.Base64;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class Tc01HomePage {
+import io.qameta.allure.Allure;
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Link;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.TmsLink;
+import java.io.ByteArrayInputStream;
+
+public class Tc01HomePage extends BaseTest{
+
 	@Test
-	public void launchApplciation() {
-		ChromeOptions options = new ChromeOptions();
-//		String userProfile = System.getProperty("java.io.tmpdir") + "/chrome-profile-" + System.currentTimeMillis();
-//		options.addArguments("--user-data-dir=" + userProfile);
-		options.addArguments("--headless=new"); // For Chrome 109+
-		options.addArguments("--disable-gpu");
-		options.addArguments("--no-sandbox");
-		options.addArguments("--disable-dev-shm-usage");
-		WebDriver driver = new ChromeDriver(options);
-		driver.manage().deleteAllCookies();
-		driver.manage().window().maximize();
-		driver.get("https://littlestation.in/");
+	@Description("Test the Title of the Website")
+	@Severity(SeverityLevel.CRITICAL)
+	@Owner("Jeetendra Gupta")
+	@Link(name = "Website", url = "https://littlestation.in/")
+	@Issue("AUTH-123")
+	@TmsLink("TMS-456")
+	public void launchApplciation() {	
 		String actualText = driver.findElement(By.xpath(".//p[@class='wp-block-site-tagline has-small-font-size']"))
 				.getText();
 		System.out.println(actualText);
 		Assert.assertEquals("Little Treasures, Big Smiles!", actualText);
-		driver.quit();
-
+		TakesScreenshot screenshot = (TakesScreenshot)driver;
+		String source = screenshot.getScreenshotAs(OutputType.BASE64);
+		byte[] decodedImg = Base64.getDecoder().decode(source);
+		Allure.addAttachment("Header Screenshot", new ByteArrayInputStream(decodedImg));
+	}
+	
+	@Test
+	public void validateLink() {	
+		String actualText = driver.findElement(By.xpath(".//p[@class='wp-block-site-tagline has-small-font-size']"))
+				.getText();
+		System.out.println(actualText);
+		Assert.assertEquals("Little Treasures, Big Smiles!", actualText);
+		TakesScreenshot screenshot = (TakesScreenshot)driver;
+		String source = screenshot.getScreenshotAs(OutputType.BASE64);
+		byte[] decodedImg = Base64.getDecoder().decode(source);
+		Allure.addAttachment("Header Screenshot1", new ByteArrayInputStream(decodedImg));
 	}
 }
