@@ -3,13 +3,13 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="littlestation.Tc01HomePage">
+      <class name="com.kumari.Test.TC02VerifyEarrringSection">
         <methods>
           <include name="setup"/>
           <include name="teardown"/>
-          <include name="launchApplciation"/>
+          <include name="launchWebsite"/>
         </methods>
-      </class> <!-- littlestation.Tc01HomePage -->
+      </class> <!-- com.kumari.Test.TC02VerifyEarrringSection -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->

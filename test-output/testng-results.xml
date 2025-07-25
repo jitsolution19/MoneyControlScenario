@@ -2,24 +2,24 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2025-07-17T19:24:50 IST" name="Default suite" finished-at="2025-07-17T19:25:38 IST" duration-ms="47861">
+  <suite started-at="2025-07-25T11:35:29 IST" name="Default suite" finished-at="2025-07-25T11:35:35 IST" duration-ms="5930">
     <groups>
     </groups>
-    <test started-at="2025-07-17T19:24:50 IST" name="Default test" finished-at="2025-07-17T19:25:38 IST" duration-ms="47861">
-      <class name="littlestation.Tc01HomePage">
-        <test-method is-config="true" signature="setup()[pri:0, instance:littlestation.Tc01HomePage@1f38957]" started-at="2025-07-17T19:24:50 IST" name="setup" finished-at="2025-07-17T19:25:38 IST" duration-ms="47448" status="PASS">
+    <test started-at="2025-07-25T11:35:29 IST" name="Default test" finished-at="2025-07-25T11:35:35 IST" duration-ms="5930">
+      <class name="com.kumari.Test.TC01SignUp">
+        <test-method is-config="true" signature="setup()[pri:0, instance:com.kumari.Test.TC01SignUp@61dde151]" started-at="2025-07-25T11:35:29 IST" name="setup" finished-at="2025-07-25T11:35:34 IST" duration-ms="5315" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="launchApplciation()[pri:0, instance:littlestation.Tc01HomePage@1f38957]" started-at="2025-07-17T19:25:38 IST" name="launchApplciation" finished-at="2025-07-17T19:25:38 IST" duration-ms="85" status="PASS">
+        <test-method signature="SignupWebsitefromPopup()[pri:0, instance:com.kumari.Test.TC01SignUp@61dde151]" started-at="2025-07-25T11:35:34 IST" name="SignupWebsitefromPopup" finished-at="2025-07-25T11:35:34 IST" duration-ms="147" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- launchApplciation -->
-        <test-method is-config="true" signature="teardown()[pri:0, instance:littlestation.Tc01HomePage@1f38957]" started-at="2025-07-17T19:25:38 IST" name="teardown" finished-at="2025-07-17T19:25:38 IST" duration-ms="165" status="PASS">
+        </test-method> <!-- SignupWebsitefromPopup -->
+        <test-method is-config="true" signature="teardown()[pri:0, instance:com.kumari.Test.TC01SignUp@61dde151]" started-at="2025-07-25T11:35:34 IST" name="teardown" finished-at="2025-07-25T11:35:35 IST" duration-ms="267" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- teardown -->
-      </class> <!-- littlestation.Tc01HomePage -->
+      </class> <!-- com.kumari.Test.TC01SignUp -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

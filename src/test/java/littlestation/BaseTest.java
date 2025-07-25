@@ -1,5 +1,7 @@
 package littlestation;
 
+import java.time.Duration;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -10,13 +12,15 @@ import io.qameta.allure.Step;
 import utilities.CaptureScreenshot;
 
 public class BaseTest {
-	static WebDriver driver = null;
+	protected static WebDriver driver = null;
+	private String currentApplication = "kumari";
 
 	@BeforeTest
 	public void setup() {
-		settingChrome();
+//		settingChrome();
+		chromedriverSetup();
 		deleteCookies();
-		launchbrowser();
+		launchbrowser(new CaptureScreenshot().getapplicationurl(currentApplication));
 	}
 
 	@Step("Setting the Chrome Browser for Testing")
@@ -29,18 +33,21 @@ public class BaseTest {
 		driver = new ChromeDriver(options);
 	}
 
+	public void chromedriverSetup() {
+		driver = new ChromeDriver();
+	}
+
 	@Step("Delete the Cookies and Maximize the Browser")
 	public void deleteCookies() {
 		new CaptureScreenshot();
 		driver.manage().deleteAllCookies();
 		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
 	}
 
 	@Step("Launch the Application Url")
-	public void launchbrowser() {
-
-		driver.get("https://littlestation.in/");
-		
+	public void launchbrowser(String url) {
+		driver.get(url);
 	}
 
 	@AfterTest
