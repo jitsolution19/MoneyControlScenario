@@ -12,7 +12,7 @@ import io.qameta.allure.Step;
 import utilities.CaptureScreenshot;
 
 public class BaseTest {
-	protected static WebDriver driver = null;
+	public static WebDriver driver = null;
 	private String currentApplication = "kumari";
 
 	@BeforeTest

@@ -51,7 +51,6 @@
 			<version>0.18.2</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

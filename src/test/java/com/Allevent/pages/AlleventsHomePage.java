@@ -1,13 +1,17 @@
 package com.Allevent.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class AlleventsHomePage {
-	WebDriver driver;
+	private WebDriver driver;
 
 	AlleventsHomePage(WebDriver driver) {
 		this.driver = driver;
 	}
 	
+	public void changecity() {
+		driver.findElement(By.xpath(null));
+	}
 	
 }

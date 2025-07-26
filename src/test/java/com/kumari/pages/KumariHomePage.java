@@ -1,11 +1,14 @@
 package com.kumari.pages;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -53,5 +56,24 @@ public class KumariHomePage {
 		}
 		driver.switchTo().defaultContent();
 		return flag;
+	}
+
+	@Step("Get the Sub menu from the Top Nav bar")
+	public ArrayList<String> getsubmenufromTopNavBar() {
+		ArrayList<String> output = new ArrayList<String>();
+		WebElement menu = wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath(".//a[@title='Earrings']/span"))));
+		Actions actions = new Actions(driver);
+		actions.moveToElement(menu).perform();
+		List<WebElement> subMenuItems=wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath(".//div[@class='bpcvpff mgz-element no-link custom_ninjamenu_title nav-item']/following-sibling::div//span")));
+		for (WebElement item : subMenuItems) {
+			output.add(item.getText());
+			System.out.println(item.getText());
+		}
+		return output;
+	}
+
+	@Step("Get Menu from Top Nav bar")
+	public String getmenufromTopNavBar(String menuOption) {
+		return (driver.findElement(By.xpath(".//a[@title='" + menuOption + "']/span")).getText());
 	}
 }

@@ -1,5 +1,8 @@
 package com.kumari.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,12 +26,23 @@ public class TC02VerifyEarrringSection extends BaseTest {
 		Assert.assertEquals(page.closeSingupPopup(), true);
 	}
 
+	@Test
+	@Description("Validate Earrings menu is present in the TOP Nav bar")
 	public void verifyearrringInTopNavBar() {
-
+		KumariHomePage page = new KumariHomePage(driver);
+		Assert.assertEquals(page.closeSingupPopup(), true);
+		Assert.assertEquals(page.getmenufromTopNavBar("Earrings"), "EARRINGS");
 	}
 
+	@Test
+	@Description("Validate Sub Menu from Shop By Style")
 	public void getsubmenuUnderShopByStyle() {
-
+		List<String> input = Arrays.asList("Bali","Drops & Danglers","Studs & Tops","Statement Earrings","Jhumkas","Earcuff","Sui Dhaga");
+		KumariHomePage page = new KumariHomePage(driver);	
+		Assert.assertEquals(page.closeSingupPopup(), true);
+		List<String>output=page.getsubmenufromTopNavBar();
+		Assert.assertEquals(input.containsAll(output), true);
+		
 	}
 
 	public void getsubmenuUnderShiopByMaterial() {

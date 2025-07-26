@@ -7,7 +7,7 @@
         <methods>
           <include name="setup"/>
           <include name="teardown"/>
-          <include name="launchWebsite"/>
+          <include name="getsubmenuUnderShopByStyle"/>
         </methods>
       </class> <!-- com.kumari.Test.TC02VerifyEarrringSection -->
     </classes>
